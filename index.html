@@ -319,35 +319,35 @@
       <!-- Top Action & Meta Bar -->
       <div class="workspace-meta-bar">
         <div class="workspace-breadcrumbs">
-          <span style="color: var(--primary); font-weight: 700; display: flex; align-items: center; gap: 4px;">
+          <span class="ws-breadcrumb-chamber">
             <span class="material-symbols-outlined" style="font-size: 16px;">biotech</span>
             Chamber 04-B
           </span>
-          <span>/</span>
-          <span>Compound Inspection</span>
-          <span>/</span>
-          <span id="ws-formula-badge" class="font-mono" style="font-weight: 700; color: var(--on-surface);">C₉H₈O₄</span>
-          <span style="background: var(--secondary-container); color: var(--on-secondary-container); font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">
+          <span class="ws-breadcrumb-sep">/</span>
+          <span class="ws-breadcrumb-section">Compound Inspection</span>
+          <span class="ws-breadcrumb-sep">/</span>
+          <span id="ws-formula-badge" class="font-mono ws-breadcrumb-formula">C₉H₈O₄</span>
+          <span class="ws-badge-spec">
             Verified Spec
           </span>
         </div>
 
         <div class="ws-action-bar-group">
           <div class="ws-dft-badge font-mono">
-            <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--primary); animation: pulse 2s infinite;"></span>
+            <span class="ws-pulse-dot"></span>
             <span>DFT B3LYP/6-31G* Converged</span>
           </div>
           <div class="ws-action-buttons-group">
-            <button id="btn-export-sdf" class="btn-secondary" type="button" title="Export 3D Coordinates (SDF)">
-              <span class="material-symbols-outlined" style="font-size: 14px;">download</span>
+            <button id="btn-export-sdf" class="btn-secondary ws-action-btn" type="button" title="Export 3D Coordinates (SDF)">
+              <span class="material-symbols-outlined">download</span>
               <span>Export SDF</span>
             </button>
-            <button id="btn-copy-inchikey" class="btn-secondary" type="button" title="Copy InChIKey">
-              <span class="material-symbols-outlined" style="font-size: 14px;">content_copy</span>
+            <button id="btn-copy-inchikey" class="btn-secondary ws-action-btn" type="button" title="Copy InChIKey">
+              <span class="material-symbols-outlined">content_copy</span>
               <span>InChIKey</span>
             </button>
-            <button id="btn-copy-smiles" class="btn-secondary" type="button" title="Copy SMILES">
-              <span class="material-symbols-outlined" style="font-size: 14px;">code</span>
+            <button id="btn-copy-smiles" class="btn-secondary ws-action-btn" type="button" title="Copy SMILES">
+              <span class="material-symbols-outlined">code</span>
               <span>SMILES</span>
             </button>
           </div>
@@ -358,38 +358,38 @@
       <div class="workspace-layout">
         
         <!-- LEFT COLUMN: Molecular Viewer & Controls (~60%) -->
-        <div>
+        <div class="workspace-left-col">
           <!-- Molecule Header & Prominent Mode Segmented Control -->
-          <div style="background: var(--surface-container-lowest); border: 1px solid var(--surface-container-high); border-radius: var(--radius-xl); padding: 18px 20px; margin-bottom: 16px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px;">
-            <div>
-              <div style="display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">
+          <div class="ws-header-card">
+            <div class="ws-header-info">
+              <div class="ws-subfamily-row">
                 <span id="ws-subfamily-tag">Esters & Carboxylic Acids</span>
                 <span>•</span>
-                <span id="ws-cas-text" style="color: var(--primary); font-weight: 600;">CAS 50-78-2</span>
+                <span id="ws-cas-text" class="ws-cas-badge">CAS 50-78-2</span>
               </div>
-              <h1 id="ws-compound-name" style="font-size: 26px; font-weight: 800; color: var(--on-surface); line-height: 1.2;">Acetylsalicylic Acid</h1>
-              <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
-                <span id="ws-canonical-name" class="font-mono" style="font-size: 12px; font-weight: 700; color: var(--primary);">Aspirin</span>
-                <span style="color: var(--text-muted); font-size: 12px;">—</span>
-                <span id="ws-iupac" class="font-mono" style="font-size: 11px; color: var(--text-muted);">2-acetoxybenzoic acid</span>
-                <span style="color: var(--text-muted); font-size: 12px;">•</span>
-                <span id="ws-inchikey-text" class="font-mono" style="font-size: 10px; color: var(--text-muted); background: var(--surface-container); padding: 2px 6px; border-radius: 4px;"></span>
+              <h1 id="ws-compound-name" class="ws-compound-title">Acetylsalicylic Acid</h1>
+              <div class="ws-synonyms-row">
+                <span id="ws-canonical-name" class="font-mono ws-canonical-name">Aspirin</span>
+                <span class="ws-syn-sep">—</span>
+                <span id="ws-iupac" class="font-mono ws-iupac-name">2-acetoxybenzoic acid</span>
+                <span class="ws-syn-sep">•</span>
+                <span id="ws-inchikey-text" class="font-mono ws-inchikey-badge"></span>
               </div>
             </div>
 
             <!-- Segmented Mode Controls -->
-            <div style="display: flex; background: var(--surface-container-low); padding: 4px; border-radius: var(--radius-lg); border: 1px solid var(--surface-container-high); gap: 2px;">
-              <button id="btn-mode-3d" class="btn-secondary mode-btn active" style="border: none; padding: 6px 12px; font-size: 11px; font-family: var(--font-mono);" type="button">
-                <span class="material-symbols-outlined" style="font-size: 15px;">view_in_ar</span>
-                3D Conformation
+            <div class="ws-mode-segmented">
+              <button id="btn-mode-3d" class="btn-secondary mode-btn active" type="button">
+                <span class="material-symbols-outlined">view_in_ar</span>
+                <span class="mode-label">3D Conformation</span>
               </button>
-              <button id="btn-mode-2d" class="btn-secondary mode-btn" style="border: none; padding: 6px 12px; font-size: 11px; font-family: var(--font-mono);" type="button">
-                <span class="material-symbols-outlined" style="font-size: 15px;">polyline</span>
-                2D Skeletal
+              <button id="btn-mode-2d" class="btn-secondary mode-btn" type="button">
+                <span class="material-symbols-outlined">polyline</span>
+                <span class="mode-label">2D Skeletal</span>
               </button>
-              <button id="btn-mode-cpk" class="btn-secondary mode-btn" style="border: none; padding: 6px 12px; font-size: 11px; font-family: var(--font-mono);" type="button">
-                <span class="material-symbols-outlined" style="font-size: 15px;">bubble_chart</span>
-                CPK Sphere
+              <button id="btn-mode-cpk" class="btn-secondary mode-btn" type="button">
+                <span class="material-symbols-outlined">bubble_chart</span>
+                <span class="mode-label">CPK Sphere</span>
               </button>
             </div>
           </div>
@@ -458,10 +458,10 @@
 
             <!-- Bottom Status Bar & Element CPK Legend -->
             <div class="chamber-status-bar">
-              <div style="display: flex; align-items: center; gap: 14px;">
+              <div class="chamber-status-meta">
                 <span>Total: <strong id="chamber-total-atoms" style="color: #fff;">--</strong> atoms</span>
                 <span>Formula: <strong id="chamber-formula-spec" style="color: #cbd5e1;">--</strong></span>
-                <span>Optics: <strong style="color: #cbd5e1;">DFT 3D Conformer</strong></span>
+                <span class="chamber-optics-spec">Optics: <strong style="color: #cbd5e1;">DFT 3D Conformer</strong></span>
               </div>
 
               <div class="cpk-legend" id="chamber-cpk-legend">
