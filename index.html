@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bondly — Interactive Chemistry Learning & Molecular Intelligence Platform</title>
+  <meta name="description" content="Explore how 3D atomic geometry and functional groups dictate macro-scale physical, biological, and chemical properties.">
+
+  <!-- Google Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css?v=20261025_04">
+
+  <!-- 3Dmol.js (3D WebGL Molecular Viewer) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.4.2/3Dmol-min.js"></script>
+
+  <!-- SmilesDrawer (2D Skeletal Renderer) -->
+  <script src="https://unpkg.com/smiles-drawer@2.1.7/dist/smiles-drawer.min.js"></script>
+</head>
+<body data-route="discover">
+
+  <!-- =========================================================================
+       GLOBAL APP HEADER
+       ========================================================================= -->
+  <header class="app-header">
+    <div style="display: flex; align-items: center; gap: 24px;">
+      <a class="brand-container" data-route="discover" href="#discover">
+        <div class="brand-logo-mark">
+          <span class="material-symbols-outlined" style="font-size: 20px;">hub</span>
+        </div>
+        <div class="brand-title">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span class="brand-name">Bondly</span>
+            <span class="brand-version-badge">V2.4</span>
+          </div>
+          <span class="brand-sub">Chemical Intelligence</span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <nav class="header-nav">
+        <a class="nav-link active" data-route="discover" href="#discover">
+          <span class="material-symbols-outlined" style="font-size: 16px;">explore</span>
+          Discover
+        </a>
+        <a class="nav-link" data-route="workspace" href="#workspace">
+          <span class="material-symbols-outlined" style="font-size: 16px;">view_in_ar</span>
+          Workspace
+        </a>
+        <a class="nav-link" data-route="periodic" href="#periodic">
+          <span class="material-symbols-outlined" style="font-size: 16px;">grid_view</span>
+          Periodic Guide
+        </a>
+      </nav>
+    </div>
+
+    <!-- Right Header Actions -->
+    <div class="header-actions">
+      <button class="search-trigger-btn" type="button" title="Quick Search (⌘K)" style="display: none;">
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span class="material-symbols-outlined" style="font-size: 16px;">search</span>
+          <span>Search entities...</span>
+        </div>
+        <kbd class="kbd-badge">⌘K</kbd>
+      </button>
+
+      <button class="btn-primary btn-surprise-me" type="button">
+        <span class="material-symbols-outlined" style="font-size: 16px;">science</span>
+        <span>Surprise Me</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       APP MAIN (VIEWS)
+       ========================================================================= -->
+  <main class="app-main">
+
+    <!-- ---------------------------------------------------------------------
+         VIEW 1: DISCOVERY HUB (#discover)
+         --------------------------------------------------------------------- -->
+    <section id="view-discover" class="view-section active">
+      
+      <!-- Top Ambient Hero -->
+      <div class="hero-discovery">
+        <div class="ambient-blobs-container">
+          <div class="ambient-blob-1"></div>
+          <div class="ambient-blob-2"></div>
+        </div>
+
+        <div style="position: relative; z-index: 5;">
+          <div class="hero-meta-pill">
+            <span>Interactive Structural Chemistry</span>
+            <span style="opacity: 0.5;">/</span>
+            <span style="display: flex; align-items: center; gap: 6px;">
+              <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--primary);"></span>
+              CAS Indexed • v2.4 • Precision IUPAC
+            </span>
+          </div>
+
+          <h1 class="hero-title">Explore the chemistry behind molecules.</h1>
+          <p class="hero-subtitle">
+            Investigate how 3D conformation, electron density delocalization, and functional group stereochemistry dictate macro-scale physical thermodynamics and biological receptor binding.
+          </p>
+
+          <!-- Universal Search Input Bar -->
+          <div class="search-box-wrapper">
+            <div class="search-input-group">
+              <div class="search-icon-left">
+                <span class="material-symbols-outlined" style="font-size: 20px;">search</span>
+              </div>
+              <input type="text" id="compoundSearchInput" class="search-input-field" placeholder="Search by name (Aspirin), formula (C9H8O4), IUPAC, or CAS (50-78-2)..." autocomplete="off">
+              <button class="search-action-btn" type="button" onclick="document.getElementById('compoundSearchInput').focus()">
+                <span class="material-symbols-outlined" style="font-size: 16px;">manage_search</span>
+                Analyze
+              </button>
+            </div>
+
+            <!-- Autocomplete Dropdown -->
+            <div id="searchResultsDropdown" class="search-results-dropdown"></div>
+
+            <!-- Quick Filter Chips -->
+            <div class="quick-filters">
+              <span class="font-mono" style="font-size: 11px; color: var(--text-muted);">Quick Filters:</span>
+              <button class="filter-chip" onclick="document.getElementById('compoundSearchInput').value='Analgesic'; document.getElementById('compoundSearchInput').dispatchEvent(new Event('input'))">Analgesics</button>
+              <button class="filter-chip" onclick="document.getElementById('compoundSearchInput').value='Opioid'; document.getElementById('compoundSearchInput').dispatchEvent(new Event('input'))">Opioids</button>
+              <button class="filter-chip" onclick="document.getElementById('compoundSearchInput').value='Antibiotic'; document.getElementById('compoundSearchInput').dispatchEvent(new Event('input'))">Beta-Lactams</button>
+              <button class="filter-chip" onclick="document.getElementById('compoundSearchInput').value='C2H6O'; document.getElementById('compoundSearchInput').dispatchEvent(new Event('input'))">C2H6O Isomers</button>
+              <button class="filter-chip" onclick="document.getElementById('compoundSearchInput').value='C9H8O4'; document.getElementById('compoundSearchInput').dispatchEvent(new Event('input'))">Aspirin (C9H8O4)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Taxonomic Functional Matrix (7 Bento Cards) -->
+      <div class="taxonomy-section">
+        <div class="section-container">
+          <div class="section-header-row">
+            <div>
+              <div class="section-label">Taxonomic Functional Matrix</div>
+              <h2 class="section-heading">Browse by Compound Family</h2>
+              <p class="section-desc">
+                Functional motifs define thermodynamic behaviors, charge distributions, and covalent reactivity pathways across organic chemistry.
+              </p>
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 12px;">
+              <span class="font-mono" style="font-size: 11px; color: var(--text-muted); padding: 4px 8px; background: var(--surface-container); border-radius: 4px;">
+                7 Curated Reactive Portals
+              </span>
+            </div>
+          </div>
+
+          <!-- Dynamic Bento Grid -->
+          <div id="taxonomy-bento-grid" class="bento-grid"></div>
+        </div>
+      </div>
+
+      <!-- Featured Spotlight: Constitutional Isomerism -->
+      <div class="spotlight-section">
+        <div class="spotlight-card">
+          <div class="spotlight-header">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <span class="font-mono" style="font-size: 10px; font-weight: 700; text-transform: uppercase; background: var(--primary); color: #fff; padding: 2px 8px; border-radius: 4px;">
+                  Spotlight Comparative Study
+                </span>
+                <span class="font-mono" style="font-size: 11px; color: var(--text-muted);">ISOMER-PAIR #094</span>
+              </div>
+              <h2 style="font-size: 26px; font-weight: 700; color: var(--on-surface);">Ethanol vs. Dimethyl Ether</h2>
+              <p style="font-size: 14px; color: var(--text-muted); margin-top: 4px;">
+                Both share the exact stoichiometric formula <strong class="font-mono" style="color: var(--on-surface);">C₂H₆O</strong> (MW: 46.07 g/mol). Observe how structural connectivity alone dictates macroscopic thermodynamics.
+              </p>
+            </div>
+
+            <!-- Temperature Delta Pill -->
+            <div class="delta-pill">
+              <div>
+                <span class="font-mono" style="font-size: 10px; text-transform: uppercase; color: var(--text-muted); display: block;">Δ Boiling Point</span>
+                <span class="delta-val">102.37 °C</span>
+              </div>
+              <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--primary-container); color: #fff; display: flex; align-items: center; justify-content: center;">
+                <span class="material-symbols-outlined" style="font-size: 20px;">thermostat</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Side-by-Side Isomer Panels -->
+          <div class="isomer-contrast-grid">
+            <!-- Compound A: Ethanol -->
+            <div class="isomer-col">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <span class="font-mono" style="font-size: 10px; font-weight: 700; color: var(--primary); background: var(--primary-fixed); padding: 2px 6px; border-radius: 4px;">ISOMER A</span>
+                    <h3 style="font-size: 20px; font-weight: 700; margin-top: 4px;">Ethanol</h3>
+                    <span class="font-mono" style="font-size: 12px; color: var(--text-muted);">CH₃−CH₂−OH</span>
+                  </div>
+                  <span class="font-mono" style="font-size: 11px; font-weight: 600; padding: 4px 8px; background: var(--surface-container-lowest); border-radius: 6px; color: var(--primary); box-shadow: var(--shadow-subtle);">
+                    Liquid @ STP
+                  </span>
+                </div>
+
+                <div class="isomer-svg-box">
+                  <svg width="180" height="60" viewBox="0 0 160 60" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--on-surface);">
+                    <path d="M 20 45 L 60 20 L 100 45" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M 100 45 L 125 30" stroke-linecap="round"/>
+                    <text x="132" y="32" font-family="JetBrains Mono" font-size="12" font-weight="700" fill="currentColor">OH</text>
+                    <circle cx="148" cy="22" r="1.5" fill="var(--primary)"/>
+                    <circle cx="152" cy="16" r="1.5" fill="var(--primary)"/>
+                    <circle cx="156" cy="10" r="1.5" fill="var(--primary)"/>
+                  </svg>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                  <div style="background: var(--surface-container-lowest); padding: 8px 10px; border-radius: 6px;">
+                    <span class="font-mono" style="font-size: 9px; text-transform: uppercase; color: var(--text-muted); display: block;">Normal Boiling Point</span>
+                    <span class="font-mono" style="font-size: 16px; font-weight: 700; color: var(--on-surface);">+78.37 °C</span>
+                  </div>
+                  <div style="background: var(--surface-container-lowest); padding: 8px 10px; border-radius: 6px;">
+                    <span class="font-mono" style="font-size: 9px; text-transform: uppercase; color: var(--text-muted); display: block;">H-Bond Network</span>
+                    <span class="font-mono" style="font-size: 12px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 4px; margin-top: 4px;">
+                      <span class="material-symbols-outlined" style="font-size: 14px;">check_circle</span> Active (D / A)
+                    </span>
+                  </div>
+                </div>
+
+                <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-top: 12px;">
+                  Extensive intermolecular hydrogen bonding lattice creates high cohesive enthalpy, maintaining ethanol in condensed liquid phase at ambient room temperature.
+                </p>
+              </div>
+
+              <button class="btn-secondary" style="margin-top: 16px; width: 100%; justify-content: center;" onclick="window.Bondly.openWorkspace('ethanol')">
+                <span class="material-symbols-outlined" style="font-size: 16px;">view_in_ar</span>
+                Inspect Ethanol 3D
+              </button>
+            </div>
+
+            <!-- Compound B: Dimethyl Ether -->
+            <div class="isomer-col">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <span class="font-mono" style="font-size: 10px; font-weight: 700; color: var(--tertiary); background: var(--tertiary-fixed); padding: 2px 6px; border-radius: 4px;">ISOMER B</span>
+                    <h3 style="font-size: 20px; font-weight: 700; margin-top: 4px;">Dimethyl Ether</h3>
+                    <span class="font-mono" style="font-size: 12px; color: var(--text-muted);">CH₃−O−CH₃</span>
+                  </div>
+                  <span class="font-mono" style="font-size: 11px; font-weight: 600; padding: 4px 8px; background: var(--surface-container-lowest); border-radius: 6px; color: var(--tertiary); box-shadow: var(--shadow-subtle);">
+                    Gas @ STP
+                  </span>
+                </div>
+
+                <div class="isomer-svg-box">
+                  <svg width="180" height="60" viewBox="0 0 160 60" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--on-surface);">
+                    <path d="M 25 40 L 70 20" stroke-linecap="round"/>
+                    <text x="75" y="24" font-family="JetBrains Mono" font-size="12" font-weight="700" fill="currentColor">O</text>
+                    <path d="M 88 20 L 135 40" stroke-linecap="round"/>
+                  </svg>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                  <div style="background: var(--surface-container-lowest); padding: 8px 10px; border-radius: 6px;">
+                    <span class="font-mono" style="font-size: 9px; text-transform: uppercase; color: var(--text-muted); display: block;">Normal Boiling Point</span>
+                    <span class="font-mono" style="font-size: 16px; font-weight: 700; color: #dc2626;">−24.00 °C</span>
+                  </div>
+                  <div style="background: var(--surface-container-lowest); padding: 8px 10px; border-radius: 6px;">
+                    <span class="font-mono" style="font-size: 9px; text-transform: uppercase; color: var(--text-muted); display: block;">H-Bond Network</span>
+                    <span class="font-mono" style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: flex; align-items: center; gap: 4px; margin-top: 4px;">
+                      <span class="material-symbols-outlined" style="font-size: 14px;">cancel</span> Absent (No Donor)
+                    </span>
+                  </div>
+                </div>
+
+                <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-top: 12px;">
+                  With no acidic protons on oxygen, interactions are constrained to weak London dispersion and dipole forces, causing phase transition to gas at −24 °C.
+                </p>
+              </div>
+
+              <button class="btn-secondary" style="margin-top: 16px; width: 100%; justify-content: center;" onclick="window.Bondly.openWorkspace('dimethylether')">
+                <span class="material-symbols-outlined" style="font-size: 16px;">view_in_ar</span>
+                Inspect Dimethyl Ether 3D
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Educational Discovery Callout (Did you know?) -->
+      <div class="did-you-know-card">
+        <div class="did-you-know-header">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary-fixed); color: var(--primary); display: flex; align-items: center; justify-content: center;">
+            <span class="material-symbols-outlined" style="font-size: 18px;">lightbulb</span>
+          </div>
+          <div>
+            <h3 style="font-size: 16px; font-weight: 700; color: var(--on-surface);">Did you know?</h3>
+            <span class="font-mono" style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Stereochemical Pharmacology</span>
+          </div>
+        </div>
+        <p style="font-size: 13.5px; color: var(--on-surface-variant); line-height: 1.5; margin: 10px 0 14px;">
+          Thalidomide possesses two optical enantiomers: <strong>(R)-thalidomide</strong> acts as a harmless sedative, whereas <strong>(S)-thalidomide</strong> causes severe teratogenic birth defects. Molecular geometry is not just structural—it is biologically critical.
+        </p>
+        <div class="did-you-know-banner">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; font-family: var(--font-mono); font-size: 11px; color: #cbd5e1;">
+            <span>chirality inspection // stereocenter C*</span>
+            <span class="material-symbols-outlined" style="font-size: 16px; color: var(--primary-fixed-dim);">biotech</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------------------------
+         VIEW 2: COMPOUND EXPLORATION WORKSPACE (#workspace)
+         --------------------------------------------------------------------- -->
+    <section id="view-workspace" class="view-section">
+      
+      <!-- Top Action & Meta Bar -->
+      <div class="workspace-meta-bar">
+        <div class="workspace-breadcrumbs">
+          <span style="color: var(--primary); font-weight: 700; display: flex; align-items: center; gap: 4px;">
+            <span class="material-symbols-outlined" style="font-size: 16px;">biotech</span>
+            Chamber 04-B
+          </span>
+          <span>/</span>
+          <span>Compound Inspection</span>
+          <span>/</span>
+          <span id="ws-formula-badge" class="font-mono" style="font-weight: 700; color: var(--on-surface);">C₉H₈O₄</span>
+          <span style="background: var(--secondary-container); color: var(--on-secondary-container); font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">
+            Verified Spec
+          </span>
+        </div>
+
+        <div class="ws-action-bar-group">
+          <div class="ws-dft-badge font-mono">
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--primary); animation: pulse 2s infinite;"></span>
+            <span>DFT B3LYP/6-31G* Converged</span>
+          </div>
+          <div class="ws-action-buttons-group">
+            <button id="btn-export-sdf" class="btn-secondary" type="button" title="Export 3D Coordinates (SDF)">
+              <span class="material-symbols-outlined" style="font-size: 14px;">download</span>
+              <span>Export SDF</span>
+            </button>
+            <button id="btn-copy-inchikey" class="btn-secondary" type="button" title="Copy InChIKey">
+              <span class="material-symbols-outlined" style="font-size: 14px;">content_copy</span>
+              <span>InChIKey</span>
+            </button>
+            <button id="btn-copy-smiles" class="btn-secondary" type="button" title="Copy SMILES">
+              <span class="material-symbols-outlined" style="font-size: 14px;">code</span>
+              <span>SMILES</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Split Layout -->
+      <div class="workspace-layout">
+        
+        <!-- LEFT COLUMN: Molecular Viewer & Controls (~60%) -->
+        <div>
+          <!-- Molecule Header & Prominent Mode Segmented Control -->
+          <div style="background: var(--surface-container-lowest); border: 1px solid var(--surface-container-high); border-radius: var(--radius-xl); padding: 18px 20px; margin-bottom: 16px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">
+                <span id="ws-subfamily-tag">Esters & Carboxylic Acids</span>
+                <span>•</span>
+                <span id="ws-cas-text" style="color: var(--primary); font-weight: 600;">CAS 50-78-2</span>
+              </div>
+              <h1 id="ws-compound-name" style="font-size: 26px; font-weight: 800; color: var(--on-surface); line-height: 1.2;">Acetylsalicylic Acid</h1>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+                <span id="ws-canonical-name" class="font-mono" style="font-size: 12px; font-weight: 700; color: var(--primary);">Aspirin</span>
+                <span style="color: var(--text-muted); font-size: 12px;">—</span>
+                <span id="ws-iupac" class="font-mono" style="font-size: 11px; color: var(--text-muted);">2-acetoxybenzoic acid</span>
+                <span style="color: var(--text-muted); font-size: 12px;">•</span>
+                <span id="ws-inchikey-text" class="font-mono" style="font-size: 10px; color: var(--text-muted); background: var(--surface-container); padding: 2px 6px; border-radius: 4px;"></span>
+              </div>
+            </div>
+
+            <!-- Segmented Mode Controls -->
+            <div style="display: flex; background: var(--surface-container-low); padding: 4px; border-radius: var(--radius-lg); border: 1px solid var(--surface-container-high); gap: 2px;">
+              <button id="btn-mode-3d" class="btn-secondary mode-btn active" style="border: none; padding: 6px 12px; font-size: 11px; font-family: var(--font-mono);" type="button">
+                <span class="material-symbols-outlined" style="font-size: 15px;">view_in_ar</span>
+                3D Conformation
+              </button>
+              <button id="btn-mode-2d" class="btn-secondary mode-btn" style="border: none; padding: 6px 12px; font-size: 11px; font-family: var(--font-mono);" type="button">
+                <span class="material-symbols-outlined" style="font-size: 15px;">polyline</span>
+                2D Skeletal
+              </button>
+              <button id="btn-mode-cpk" class="btn-secondary mode-btn" style="border: none; padding: 6px 12px; font-size: 11px; font-family: var(--font-mono);" type="button">
+                <span class="material-symbols-outlined" style="font-size: 15px;">bubble_chart</span>
+                CPK Sphere
+              </button>
+            </div>
+          </div>
+
+          <!-- 3D Optical Molecular Chamber Card -->
+          <div class="chamber-card">
+            <!-- Background grid effect -->
+            <div class="chamber-grid-overlay"></div>
+
+            <!-- PubChem Live Loading Overlay -->
+            <div id="chamber-loading-overlay" class="chamber-loading-overlay">
+              <div class="chamber-loader-ring"></div>
+              <div style="font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: #fff;" id="chamber-loading-title">Connecting to PubChem PUG REST API...</div>
+              <div style="font-size: 12px; color: #94a3b8; max-width: 320px; text-align: center;" id="chamber-loading-subtitle">Retrieving 3D conformer coordinates and quantum parameters</div>
+            </div>
+
+            <!-- 3Dmol WebGL Container -->
+            <div id="chamber-viewport" class="chamber-canvas"></div>
+
+            <!-- 2D Skeletal SVG Container (Hidden by default, toggled via mode) -->
+            <div id="chamber-2d-canvas" class="chamber-2d-canvas">
+              <svg id="chamber-2d-svg" width="560" height="420" style="max-width: 95%; max-height: 95%;"></svg>
+            </div>
+
+            <!-- Interactive Micro-Tooltip for Atom Picking -->
+            <div id="atom-tooltip" style="position: absolute; top: 70px; left: 30px; background: rgba(13, 28, 48, 0.95); backdrop-filter: blur(8px); padding: 10px 14px; border-radius: 8px; border-left: 3px solid var(--accent-amber); box-shadow: var(--shadow-elevated); z-index: 20; display: none; border: 1px solid rgba(51,65,85,0.5);"></div>
+
+            <!-- Floating Top HUD Header -->
+            <div class="chamber-hud-top">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="hud-pill">
+                  <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+                  <span style="font-weight: 700; color: #a7f3d0; text-transform: uppercase;">Chamber Optics</span>
+                  <span style="opacity: 0.4;">|</span>
+                  <span style="color: #cbd5e1;">FOV: 42.5° • 8.4 Å</span>
+                </div>
+              </div>
+
+              <!-- Active Functional Group Targeting Pill -->
+              <div id="targeting-hud-pill" class="hud-pill targeting-pill" style="display: none;">
+                <!-- Populated dynamically on group selection -->
+              </div>
+            </div>
+
+            <!-- Floating Bottom-Center Controls Dock -->
+            <div class="chamber-controls-dock">
+              <button id="btn-reset-view" class="chamber-tool-btn" title="Reset View" type="button">
+                <span class="material-symbols-outlined" style="font-size: 18px;">restart_alt</span>
+              </button>
+              <button id="btn-center-camera" class="chamber-tool-btn" title="Center Camera" type="button">
+                <span class="material-symbols-outlined" style="font-size: 18px;">filter_center_focus</span>
+              </button>
+              <div class="dock-divider"></div>
+              <button id="btn-zoom-in" class="chamber-tool-btn" title="Zoom In" type="button">
+                <span class="material-symbols-outlined" style="font-size: 18px;">zoom_in</span>
+              </button>
+              <button id="btn-zoom-out" class="chamber-tool-btn" title="Zoom Out" type="button">
+                <span class="material-symbols-outlined" style="font-size: 18px;">zoom_out</span>
+              </button>
+              <div class="dock-divider"></div>
+              <button id="btn-toggle-spin" class="chamber-tool-btn" title="Toggle Auto-Spin" type="button" style="width: auto; padding: 0 10px; font-family: var(--font-mono); font-size: 11px; gap: 6px;">
+                <span class="material-symbols-outlined" style="font-size: 16px;">sync</span>
+                <span>Spin</span>
+              </button>
+            </div>
+
+            <!-- Bottom Status Bar & Element CPK Legend -->
+            <div class="chamber-status-bar">
+              <div style="display: flex; align-items: center; gap: 14px;">
+                <span>Total: <strong id="chamber-total-atoms" style="color: #fff;">--</strong> atoms</span>
+                <span>Formula: <strong id="chamber-formula-spec" style="color: #cbd5e1;">--</strong></span>
+                <span>Optics: <strong style="color: #cbd5e1;">DFT 3D Conformer</strong></span>
+              </div>
+
+              <div class="cpk-legend" id="chamber-cpk-legend">
+                <!-- Dynamically rendered per compound -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Metrics Grid Below Viewer -->
+          <div class="quick-metrics-grid">
+            <div class="metric-tile">
+              <div class="metric-tile-title">Molar Mass</div>
+              <div id="qm-molar-mass" class="metric-tile-val">180.16 <span style="font-size: 11px; font-weight: 400; color: var(--text-muted);">g/mol</span></div>
+              <div style="font-size: 10px; font-family: var(--font-mono); color: var(--text-muted); margin-top: 2px;">Mono: 180.04 u</div>
+            </div>
+            <div class="metric-tile">
+              <div class="metric-tile-title">Empirical Formula</div>
+              <div id="qm-formula" class="metric-tile-val" style="color: var(--primary);">C₉H₈O₄</div>
+              <div style="font-size: 10px; font-family: var(--font-mono); color: var(--text-muted); margin-top: 2px;">Isomers: 12</div>
+            </div>
+            <div class="metric-tile">
+              <div class="metric-tile-title">H-Bond Donors</div>
+              <div id="qm-hbd" class="metric-tile-val">1</div>
+              <div style="font-size: 10px; font-family: var(--font-mono); color: var(--text-muted); margin-top: 2px;">Carboxylic -OH</div>
+            </div>
+            <div class="metric-tile">
+              <div class="metric-tile-title">H-Bond Acceptors</div>
+              <div id="qm-hba" class="metric-tile-val">4</div>
+              <div style="font-size: 10px; font-family: var(--font-mono); color: var(--text-muted); margin-top: 2px;">2 Carbonyls, 2 Esters</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Analytical Dossier Panel (~40%) -->
+        <div class="dossier-panel">
+          
+          <!-- Quick Compound Switcher Dropdown -->
+          <div class="dossier-card" style="padding: 14px 18px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span class="font-mono" style="font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Active Library Entity</span>
+              <span class="font-mono" style="font-size: 10px; color: var(--primary); font-weight: 600;">18 Precomputed Compounds</span>
+            </div>
+            <div style="position: relative;">
+              <select id="workspaceCompoundSelector" style="width: 100%; padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--surface-container-high); background: var(--surface-container-low); font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--on-surface); outline: none; cursor: pointer;">
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+          </div>
+
+          <!-- Functional Group Explorer Deck -->
+          <div class="dossier-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span class="material-symbols-outlined" style="font-size: 18px; color: var(--primary);">filter_vintage</span>
+                <h3 style="font-size: 15px; font-weight: 700;">Functional Group Explorer</h3>
+              </div>
+              <span class="font-mono" style="font-size: 10px; padding: 2px 8px; background: rgba(0, 103, 103, 0.1); color: var(--primary); border-radius: 4px; font-weight: 600;">
+                Click to Isolate
+              </span>
+            </div>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+              Select a functional site to illuminate its resonant orbitals and atom coordinates in both 3D and 2D.
+            </p>
+
+            <div id="functional-group-list">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Dossier Tabs & Data Details -->
+          <div class="dossier-card">
+            <!-- Segmented Navigation Tabs -->
+            <div class="segmented-nav">
+              <button class="tab-btn active" data-tab="properties" type="button">Properties</button>
+              <button class="tab-btn" data-tab="mechanisms" type="button">Mechanisms</button>
+              <button class="tab-btn" data-tab="citations" type="button">Citations</button>
+            </div>
+
+            <!-- Tab 1: Empirical Properties -->
+            <div id="tab-content-properties" class="dossier-tab-content">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span class="font-mono" style="font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Core Empirical Metrics</span>
+                <span class="font-mono" style="font-size: 10px; color: var(--primary); font-weight: 600;">IUPAC / CRC Handbk</span>
+              </div>
+
+              <div class="prop-grid">
+                <div class="prop-cell">
+                  <span class="prop-cell-label">Melting Point</span>
+                  <span id="prop-melting-pt" class="prop-cell-value">135.0 °C</span>
+                </div>
+                <div class="prop-cell">
+                  <span class="prop-cell-label">Boiling Point</span>
+                  <span id="prop-boiling-pt" class="prop-cell-value" style="color: #b91c1c;">Decomposes</span>
+                </div>
+                <div class="prop-cell">
+                  <span class="prop-cell-label">Partition LogP</span>
+                  <span id="prop-logp" class="prop-cell-value">1.19</span>
+                </div>
+                <div class="prop-cell">
+                  <span class="prop-cell-label">Water Solubility</span>
+                  <span id="prop-solubility" class="prop-cell-value">3.3 mg/mL</span>
+                </div>
+                <div class="prop-cell">
+                  <span class="prop-cell-label">Acidity pKa</span>
+                  <span id="prop-pka" class="prop-cell-value" style="color: var(--primary);">3.49</span>
+                </div>
+                <div class="prop-cell">
+                  <span class="prop-cell-label">Polar Surf Area</span>
+                  <span id="prop-tpsa" class="prop-cell-value">63.6 Å²</span>
+                </div>
+              </div>
+
+              <div style="margin-top: 14px; background: var(--surface-container-low); padding: 10px 12px; border-radius: var(--radius-md); border: 1px solid var(--surface-container-high); display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--primary);">
+                  <span class="material-symbols-outlined" style="font-size: 16px;">verified</span>
+                  <span>Cross-referenced against PubChem CID & CRC Database</span>
+                </div>
+                <span class="font-mono" style="font-size: 10px; color: var(--text-muted);">Sync: Active</span>
+              </div>
+            </div>
+
+            <!-- Tab 2: Structure-Property Explanations -->
+            <div id="tab-content-mechanisms" class="dossier-tab-content" style="display: none;">
+              <div id="dossier-mechanisms">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+
+            <!-- Tab 3: Verified Literature Citations -->
+            <div id="tab-content-citations" class="dossier-tab-content" style="display: none;">
+              <div style="font-size: 12px; font-weight: 700; margin-bottom: 8px; color: var(--on-surface);">Peer-Reviewed References & Reviewers</div>
+              <div id="dossier-citations">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------------------------
+         VIEW 3: PERIODIC GUIDE & CPK REFERENCE (#periodic)
+         --------------------------------------------------------------------- -->
+    <section id="view-periodic" class="view-section">
+      <div class="periodic-hero">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; color: var(--primary); font-weight: 600; margin-bottom: 6px;">
+              <span class="material-symbols-outlined" style="font-size: 14px;">grid_view</span>
+              IUPAC Element Registry • 118 Elements Indexed
+            </div>
+            <h1 style="font-size: 32px; font-weight: 800; color: var(--on-surface);">Periodic Table of the Elements</h1>
+            <p style="font-size: 15px; color: var(--text-muted); max-width: 820px; margin-top: 6px;">
+              Explore standardized electronic configurations, Pauling electronegativities, atomic masses, and spectroscopic CPK color profiles. Click any element to inspect its quantum parameters or find compounds containing it.
+            </p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="font-mono" style="font-size: 11px; color: var(--primary); background: var(--primary-fixed); padding: 4px 10px; border-radius: 6px; font-weight: 700;">
+              118 / 118 Elements Live
+            </span>
+          </div>
+        </div>
+
+        <!-- Filter Toolbar -->
+        <div class="ptable-toolbar">
+          <div class="ptable-filter-group" id="ptable-filters">
+            <button class="ptable-filter-btn active" data-cat="all">All (118)</button>
+            <button class="ptable-filter-btn" data-cat="nonmetal"><span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>Nonmetals</button>
+            <button class="ptable-filter-btn" data-cat="noble"><span style="width: 8px; height: 8px; border-radius: 50%; background: #a855f7;"></span>Noble Gases</button>
+            <button class="ptable-filter-btn" data-cat="alkali"><span style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444;"></span>Alkali Metals</button>
+            <button class="ptable-filter-btn" data-cat="alkaline"><span style="width: 8px; height: 8px; border-radius: 50%; background: #f97316;"></span>Alkaline Earth</button>
+            <button class="ptable-filter-btn" data-cat="metalloid"><span style="width: 8px; height: 8px; border-radius: 50%; background: #06b6d4;"></span>Metalloids</button>
+            <button class="ptable-filter-btn" data-cat="halogen"><span style="width: 8px; height: 8px; border-radius: 50%; background: #eab308;"></span>Halogens</button>
+            <button class="ptable-filter-btn" data-cat="transition"><span style="width: 8px; height: 8px; border-radius: 50%; background: #3b82f6;"></span>Transition Metals</button>
+            <button class="ptable-filter-btn" data-cat="post-transition"><span style="width: 8px; height: 8px; border-radius: 50%; background: #6366f1;"></span>Post-Transition</button>
+            <button class="ptable-filter-btn" data-cat="lanthanide"><span style="width: 8px; height: 8px; border-radius: 50%; background: #ec4899;"></span>Lanthanides</button>
+            <button class="ptable-filter-btn" data-cat="actinide"><span style="width: 8px; height: 8px; border-radius: 50%; background: #f43f5e;"></span>Actinides</button>
+          </div>
+
+          <div class="ptable-search-box">
+            <span class="material-symbols-outlined" style="font-size: 16px; color: var(--text-muted);">search</span>
+            <input type="text" id="ptable-search-input" placeholder="Search element (e.g., C, Carbon, 6)..." autocomplete="off">
+          </div>
+        </div>
+
+        <!-- Mobile Swipe Hint (Hidden: Table is mobile-fitted without horizontal scroll) -->
+        <div class="mobile-swipe-hint" style="display: none;">
+          <span class="material-symbols-outlined" style="font-size: 16px;">swipe</span>
+          <span>Swipe horizontally to explore all 18 groups</span>
+        </div>
+
+        <!-- 18-Column Interactive Periodic Table Grid -->
+        <div class="ptable-scroll-wrapper">
+          <div id="ptable-grid" class="ptable-grid-18">
+            <!-- Dynamically populated from window.BONDLY_PERIODIC -->
+          </div>
+        </div>
+
+        <!-- Element Inspector Card -->
+        <div id="element-inspector-card" class="element-inspector-card">
+          <div class="element-hero-swatch" id="inspector-swatch" style="--cat-color: #10b981;">
+            <span class="element-hero-num" id="inspector-num">6</span>
+            <div class="element-hero-sym" id="inspector-sym">C</div>
+            <div class="element-hero-name" id="inspector-name">Carbon</div>
+            <div class="element-hero-weight" id="inspector-weight">12.011 u</div>
+          </div>
+
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+              <span id="inspector-cat-badge" class="font-mono" style="font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: rgba(16, 185, 129, 0.15); color: #10b981;">
+                Reactive Nonmetal
+              </span>
+              <span id="inspector-phase-badge" class="font-mono" style="font-size: 11px; color: var(--text-muted); background: var(--surface-container); padding: 2px 8px; border-radius: 4px;">
+                Solid @ STP
+              </span>
+              <span class="font-mono" style="font-size: 11px; color: var(--text-muted);">
+                Period <strong id="inspector-period">2</strong> • Group <strong id="inspector-group">14</strong>
+              </span>
+            </div>
+
+            <div class="element-specs-grid">
+              <div class="element-spec-item">
+                <span class="element-spec-label">Pauling Electronegativity</span>
+                <span class="element-spec-val" id="inspector-en">2.55</span>
+              </div>
+              <div class="element-spec-item">
+                <span class="element-spec-label">Electron Configuration</span>
+                <span class="element-spec-val" id="inspector-config">[He] 2s² 2p²</span>
+              </div>
+              <div class="element-spec-item">
+                <span class="element-spec-label">Spectroscopic CPK Color</span>
+                <span class="element-spec-val" id="inspector-color" style="display: flex; align-items: center; gap: 6px;">
+                  <span id="inspector-color-dot" style="width: 12px; height: 12px; border-radius: 50%; background: #2c3539; display: inline-block;"></span>
+                  <span id="inspector-color-text">#2c3539</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px; justify-content: center;">
+            <button id="btn-element-search-molecules" class="btn-primary" type="button" style="white-space: nowrap;">
+              <span class="material-symbols-outlined" style="font-size: 16px;">manage_search</span>
+              <span id="btn-element-search-text">Find Carbon Molecules</span>
+            </button>
+            <button id="btn-element-filter-compounds" class="btn-secondary" type="button" style="white-space: nowrap;">
+              <span class="material-symbols-outlined" style="font-size: 16px;">search</span>
+              Search in Bondly
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================================
+       GLOBAL SEARCH MODAL (⌘K)
+       ========================================================================= -->
+  <div id="searchModal" class="modal-backdrop">
+    <div class="modal-content">
+      <div style="padding: 16px; border-bottom: 1px solid var(--surface-container-high); display: flex; align-items: center; gap: 10px;">
+        <span class="material-symbols-outlined" style="color: var(--primary); font-size: 22px;">search</span>
+        <input type="text" id="modalSearchInput" placeholder="Search compound, IUPAC name, formula or CAS registry..." style="flex: 1; border: none; outline: none; font-size: 15px; font-family: var(--font-sans); color: var(--on-surface);">
+        <kbd class="kbd-badge">ESC</kbd>
+      </div>
+      <div id="modalSearchResults" style="max-height: 420px; overflow-y: auto;">
+        <div style="padding: 24px; text-align: center; color: var(--text-muted); font-size: 13px;">
+          Type any chemical formula (e.g. <code>C9H8O4</code>), IUPAC name, or common synonym.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       APP FOOTER
+       ========================================================================= -->
+  <footer style="background: var(--surface-container-low); border-top: 1px solid var(--surface-container-high); padding: 32px 24px; margin-top: auto;">
+    <div style="max-width: 1240px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="brand-logo-mark" style="width: 26px; height: 26px;">
+          <span class="material-symbols-outlined" style="font-size: 16px;">hub</span>
+        </div>
+        <span style="font-weight: 700; color: var(--on-surface);">Bondly</span>
+        <span style="font-size: 12px; color: var(--text-muted);">— Interactive Chemistry Learning & Molecular Intelligence</span>
+      </div>
+
+      <div style="font-size: 11px; color: var(--text-muted); max-width: 520px; line-height: 1.5;">
+        <strong>Scientific Educational Disclaimer:</strong> Bondly is developed for chemistry and pharmaceutical education. All empirical values are matched against IUPAC, PubChem, and the CRC Handbook. Not intended for clinical prescribing, toxicology, or medical advice.
+      </div>
+
+      <div class="font-mono" style="font-size: 11px; color: var(--text-muted);">
+        © 2026 Bondly • v2.4.0
+      </div>
+    </div>
+  </footer>
+
+  <!-- =========================================================================
+       MOBILE BOTTOM NAVIGATION DOCK (Discover, Workspace, Periodic)
+       ========================================================================= -->
+  <nav class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="Mobile Navigation">
+    <button class="mobile-nav-item active" data-route="discover" type="button" onclick="window.navigateTo && window.navigateTo('discover')">
+      <div class="mobile-nav-icon-wrap">
+        <span class="material-symbols-outlined">explore</span>
+      </div>
+      <span class="mobile-nav-label">Discover</span>
+    </button>
+    <button class="mobile-nav-item" data-route="workspace" type="button" onclick="window.navigateTo && window.navigateTo('workspace')">
+      <div class="mobile-nav-icon-wrap">
+        <span class="material-symbols-outlined">view_in_ar</span>
+      </div>
+      <span class="mobile-nav-label">Workspace</span>
+    </button>
+    <button class="mobile-nav-item" data-route="periodic" type="button" onclick="window.navigateTo && window.navigateTo('periodic')">
+      <div class="mobile-nav-icon-wrap">
+        <span class="material-symbols-outlined">grid_view</span>
+      </div>
+      <span class="mobile-nav-label">Periodic</span>
+    </button>
+  </nav>
+
+  <!-- Precomputed Database -->
+  <script src="js/compounds-data.js?v=20261025_04"></script>
+  <script src="js/periodic-data.js?v=20261025_04"></script>
+
+  <!-- Application Logic -->
+  <script src="js/app.js?v=20261025_04"></script>
+
+</body>
+</html>
