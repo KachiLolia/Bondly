@@ -92,7 +92,7 @@
           <div class="ambient-blob-2"></div>
         </div>
 
-        <div style="position: relative; z-index: 5;">
+        <div style="position: relative; z-index: 50;">
           <div class="hero-meta-pill">
             <span>Interactive Structural Chemistry</span>
             <span style="opacity: 0.5;">/</span>
@@ -109,19 +109,21 @@
 
           <!-- Universal Search Input Bar -->
           <div class="search-box-wrapper">
-            <div class="search-input-group">
-              <div class="search-icon-left">
-                <span class="material-symbols-outlined" style="font-size: 20px;">search</span>
+            <div class="search-input-container">
+              <div class="search-input-group">
+                <div class="search-icon-left">
+                  <span class="material-symbols-outlined" style="font-size: 20px;">search</span>
+                </div>
+                <input type="text" id="compoundSearchInput" class="search-input-field" placeholder="Search by name (Aspirin), formula (C9H8O4), IUPAC, or CAS (50-78-2)..." autocomplete="off">
+                <button class="search-action-btn" type="button" onclick="document.getElementById('compoundSearchInput').focus()">
+                  <span class="material-symbols-outlined" style="font-size: 16px;">manage_search</span>
+                  Analyze
+                </button>
               </div>
-              <input type="text" id="compoundSearchInput" class="search-input-field" placeholder="Search by name (Aspirin), formula (C9H8O4), IUPAC, or CAS (50-78-2)..." autocomplete="off">
-              <button class="search-action-btn" type="button" onclick="document.getElementById('compoundSearchInput').focus()">
-                <span class="material-symbols-outlined" style="font-size: 16px;">manage_search</span>
-                Analyze
-              </button>
-            </div>
 
-            <!-- Autocomplete Dropdown -->
-            <div id="searchResultsDropdown" class="search-results-dropdown"></div>
+              <!-- Autocomplete Dropdown directly beneath search bar -->
+              <div id="searchResultsDropdown" class="search-results-dropdown"></div>
+            </div>
 
             <!-- Quick Filter Chips -->
             <div class="quick-filters">
